@@ -1,1 +1,1 @@
-# kotaro8387.github.io
+# エンスマ期待値計算
