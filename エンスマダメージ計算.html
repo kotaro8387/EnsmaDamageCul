@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>エンスマ　スキル攻撃力期待値計算</title>
+  <style>
+    /* Flexコンテナのスタイル */
+    #forms {
+      display: flex;
+      gap: 20px; /* フォーム間の隙間を設定 */
+    }
+
+    /* 各フォームのスタイル */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 各フォームに含まれるボタンのスタイル */
+    button {
+      margin-top: 10px; /* ボタン上部に隙間を設定 */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>エンスマ　スキル攻撃力期待値計算</h1>
+
+  <!-- 計算式の説明 -->
+  <div id="calculationExplanation">
+    <p>このページでは、各フォームで入力された値を使用して、スキル攻撃力の期待値を計算します。</p>
+    <p>期待値の計算式と各要素については以下の通りです。</p>
+
+   <pre>
+　　計算式
+　　　（　（　現在の攻撃力　×　補正　）　×　攻撃倍率　×　強化値　）　×　弾数
+
+　　　現在の攻撃力：現在の攻撃力です。
+　　　補正：一部のスキルに適応される値です。バレット、カマイタチ、ホーミングミサイルに0.33を掛けることになります。
+　　　攻撃倍率：各スキルの攻撃倍率です。
+　　　強化値：プレイ中に各スキルが強化される際の攻撃力の増加値です。この値はスキル毎に固定の値になります。
+    　弾数：各スキルの弾数です。弾数が存在しないスキルはボールの個数としています。カマイタチは弾数ではなく攻撃間隔になります。
+   </pre>
+　　<p>それぞれの値は個人調べなので、間違っている可能性や、今後のアップデートなどで変更される可能性があります。</p>
+  </div>
+
+  <!-- 共有する一つ目の入力フォーム -->
+  <label for="sharedNumber">現在の攻撃力:</label>
+  <input type="number" id="sharedNumber" required><br>
+
+  <!-- プログラム上で用意したパーセントの値 -->
+  <input type="hidden" id="percent-1" value="20">
+  <input type="hidden" id="percent-2" value="10">
+  <input type="hidden" id="percent-3" value="20">
+  <input type="hidden" id="percent-4" value="20">
+  <input type="hidden" id="percent-5" value="30">
+  <input type="hidden" id="percent-6" value="20">
+  <input type="hidden" id="percent-7" value="20">
+  <!-- ... 各フォームに対応するpercent 要素を追加 ... -->
+
+  <!-- 各フォームを7つ横に並べる -->
+  <div id="forms">
+    <!-- 各フォームに対して異なるIDを付け、calculate関数を呼び出す -->
+    <!-- ボタンクリック時に対応するcalculate関数を呼び出す -->
+    <form id="numberForm1">
+      <label for="number2-1">バレットの攻撃倍率:</label>
+      <input type="number" id="number2-1" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-1">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-1">20</span><br>
+
+      <label for="number4-1">弾数:</label>
+      <input type="number" id="number4-1" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(1)">計算</button>
+      <div id="resultContainer1"></div>
+    </form>
+
+    <!-- 同様に6つ繰り返す -->
+    <form id="numberForm2">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-2">パワーブーストの攻撃倍率:</label>
+      <input type="number" id="number2-2" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-2">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-2">10</span><br>
+
+      <label for="number4-2">ボールの個数:</label>
+      <input type="number" id="number4-2" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(2)">計算</button>
+      <div id="resultContainer2"></div>
+    </form>
+
+    <!-- 同様に5つ繰り返す -->
+    <!-- ... -->
+
+    <form id="numberForm3">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-3">エクスプロージョンの攻撃倍率:</label>
+      <input type="number" id="number2-3" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-3">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-3">20</span><br>
+
+      <label for="number4-3">ボールの個数:</label>
+      <input type="number" id="number4-3" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(3)">計算</button>
+      <div id="resultContainer3"></div>
+    </form>
+
+    <!-- 同様に4つ繰り返す -->
+    <form id="numberForm4">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-4">ゴーストボールの攻撃倍率:</label>
+      <input type="number" id="number2-4" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-4">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-4">20</span><br>
+
+      <label for="number4-4">弾数:</label>
+      <input type="number" id="number4-4" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(4)">計算</button>
+      <div id="resultContainer4"></div>
+    </form>
+
+    <!-- 同様に3つ繰り返す -->
+    <form id="numberForm5">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-5">カマイタチの攻撃倍率:</label>
+      <input type="number" id="number2-5" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-5">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-5">30</span><br>
+
+      <label for="number4-5">攻撃間隔:</label>
+      <input type="number" id="number4-5" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(5)">計算</button>
+      <div id="resultContainer5"></div>
+    </form>
+
+    <!-- 同様に2つ繰り返す -->
+    <form id="numberForm6">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-6">サンダーボルトの攻撃倍率:</label>
+      <input type="number" id="number2-6" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-6">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-6">20</span><br>
+
+      <label for="number4-6">弾数:</label>
+      <input type="number" id="number4-6" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(6)">計算</button>
+      <div id="resultContainer6"></div>
+    </form>
+
+    <!-- 同様に1つ繰り返す -->
+    <form id="numberForm7">
+      <!-- 同様の要素を繰り返す -->
+      <label for="number2-7">ホーミングミサイルの攻撃倍率:</label>
+      <input type="number" id="number2-7" name="number2" required><br>
+
+      <!-- プログラム上で用意したパーセントの値を表示 -->
+      <label for="percent-label-7">レベルアップ時の強化値（％）:</label>
+      <span id="percent-label-7">20</span><br>
+
+      <label for="number4-7">弾数:</label>
+      <input type="number" id="number4-7" name="number4" value="1"><br>
+
+      <button type="button" onclick="calculate(7)">計算</button>
+      <div id="resultContainer7"></div>
+    </form>
+
+  </div>
+
+  <!-- 計算式の説明 -->
+  <div id="calculationSupplement">
+　　<p></p>
+    <p>スキルのレベルアップでは、スキルレベル１からスキルレベル２に上がる際に増加した分の攻撃力を加算する形で強化されます。</p>
+    <p>スキルレベル１からスキルレベル２に上がる際に増加する攻撃力はスキル毎に異なる割合が設定されており、これを「レベルアップ時の強化値（％）」としています。</p>
+    <p>以上から、スキルの攻撃力は等差数列で表すことが出来ます。</p>
+   <pre>
+　　初項a = スキルレベル１時点の攻撃力、公差d = スキルレベル１時点の攻撃力に対する強化値（％）,項数n = 現在のスキルレベルとすると
+　　　an = a + (n - 1)d
+　　となる。
+   </pre>
+    <p>このページでは、攻撃力の期待値を「全弾ヒットしたときの攻撃力（カマイタチは１秒間ヒットさせ続けた場合の攻撃力）」としています。</p>
+　　<p>期待値を可視化することで、現状どのスキルを強化するのが効率がいいかの目安を知ることが出来ます。</p>
+    <p>バレットやゴーストボールなど、全弾ヒットさせることが難しいスキルもあるので、あくまで目安として捉えていただけると幸いです。</p>
+
+
+  </div>
+
+  <script>
+    function calculate(formNumber) {
+      // 共有する一つ目の入力値を取得
+      var sharedNumber = parseFloat(document.getElementById("sharedNumber").value);
+
+      // 各フォームごとの三つ目の値を取得
+      var percentValue = parseFloat(document.getElementById("percent-" + formNumber).value);
+
+      // 各フォームのIDを基に入力された数字を取得
+      var num2 = parseFloat(document.getElementById("number2-" + formNumber).value);
+      var num4 = parseFloat(document.getElementById("number4-" + formNumber).value) || 1; // デフォルト値1を設定
+
+      // カマイタチの場合、数字4を1で除算
+      if (formNumber === 5) {
+        num4 = 1 / num4;
+      }
+
+      // 一つ目と二つ目の計算
+      var result1 = sharedNumber * num2;
+
+      // バレット、カマイタチ、ホーミングミサイルの場合、計算結果を3で除算
+      if (formNumber === 1 || formNumber === 5 || formNumber === 7) {
+        result1 = result1 / 3;
+      }
+
+      // 一つ目と二つ目の計算結果に対するパーセントを計算
+      var percentValue = (result1 * percentValue) / 100;
+
+      // 乗算、加算、乗算の順に計算
+      var result2 = percentValue;
+      var result3 = result2 * num4;
+
+      // 計算結果を表示
+      var resultContainer = document.getElementById("resultContainer" + formNumber);
+      // 結果表示用の要素が存在しない場合は作成する
+      if (!resultContainer) {
+        resultContainer = document.createElement("div");
+        resultContainer.id = "resultContainer" + formNumber;
+        document.getElementById("numberForm" + formNumber).appendChild(resultContainer);
+      }
+
+      resultContainer.innerHTML = "<br>レベルアップ一回につき上昇する攻撃力: " + result3;
+    }
+  </script>
+
+</body>
+</html>
